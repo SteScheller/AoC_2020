@@ -1,0 +1,11 @@
+{
+    "python.linting.enabled": true,
+    "python.linting.ignorePatterns": [
+        ".vscode/*.py",
+        "**/site-packages/**/*.py",
+        "**/tmp/**/*.py"
+    ],
+    "python.linting.pylintArgs": [
+        "--rcfile", ".pylintrc"
+    ]
+}
