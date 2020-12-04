@@ -1,4 +1,5 @@
 import string
+import re
 from typing import List, Dict, Set, Any
 
 def parse_input(file_path: str) -> List[Dict[str, str]]:
@@ -23,36 +24,25 @@ def check_passport_fields(passport: Dict[str, str], required_fields: List[str]) 
 def check_passport_valid(passport: Dict[str, str]) -> bool:
     valid = True
     try:
-        byr = int(passport['byr']) if len(passport['byr']) == 4 else None
-        if not((byr >= 1920) and (byr <= 2002)): valid = False;
-        iyr = int(passport['iyr']) if len(passport['iyr']) == 4 else None
-        if not((iyr >= 2010) and (iyr <= 2020)): valid = False;
-        eyr = int(passport['eyr']) if len(passport['eyr']) == 4 else None
-        if not((eyr >= 2020) and (eyr <= 2030)): valid = False;
-        hgt_unit = passport['hgt'].lstrip(string.digits)
-        if not (hgt_unit in {'cm', 'in'}): valid = False;
-        else:
-            hgt_value = int(passport['hgt'].rstrip(hgt_unit)) #rstrip doesn't check order of chars!
-            if (hgt_unit == 'cm') and not ((hgt_value >= 150) and (hgt_value <= 193)): valid = False;
-            if (hgt_unit == 'in') and not ((hgt_value >= 59) and (hgt_value <= 76)): valid = False;
-        hcl = passport['hcl']
-        if (not hcl.startswith('#')) or (len(hcl) != 7): valid = False;
-        elif not all([c in set(string.digits+'abcdef') for c in hcl[1:]]): valid = False;
+        if not(1920 <= int(passport['byr']) <= 2002): valid = False;
+        if not(2010 <= int(passport['iyr']) <= 2020): valid = False;
+        if not(2020 <= int(passport['eyr']) <= 2030): valid = False;
+        hgt_v, hgt_u = re.fullmatch(r'([0-9]+)(cm|in)', passport['hgt']).group(1, 2)
+        if not (hgt_u in {'cm', 'in'}): valid = False;
+        if (hgt_u == 'cm') and not ((150 <= int(hgt_v) <= 193)): valid = False;
+        if (hgt_u == 'in') and not ((59 <= int(hgt_v) <= 76)): valid = False;
+        if re.fullmatch(r'#[0-9a-f]{6}', passport['hcl']) is None: valid = False;
         if not (passport['ecl'] in {'amb', 'blu', 'brn', 'gry', 'grn', 'hzl', 'oth'}): valid = False;
-        pid = int(passport['pid']) if len(passport['pid']) == 9 else None
-        if pid is None: valid = False;
-    except (ValueError, KeyError):
+        if re.fullmatch(r'[0-9]{9}', passport['pid']) is None: valid = False;
+    except (TypeError, AttributeError):
         valid = False
 
     return valid
 
 if __name__ == '__main__':
-    passports = parse_input('input.txt')
-    passports_with_required_fields = [passport for passport in passports \
-        if check_passport_fields(
-            passport, ['byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid']) ]
-    print('Number of passports with required fields: {}'.format(
-        len(passports_with_required_fields) ) )
-    valid_passports = [passport for passport in passports_with_required_fields \
-        if check_passport_valid(passport)]
-    print('Number of valid passports: {}'.format(len(valid_passports)))
+    pp = parse_input('input.txt')
+    pp_r = [p for p in pp  if check_passport_fields(
+        p, ['byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid']) ]
+    print('Number of passports with required fields: {}'.format(len(pp_r)))
+    pp_v = [p for p in pp_r if check_passport_valid(p)]
+    print('Number of valid passports: {}'.format(len(pp_v)))
