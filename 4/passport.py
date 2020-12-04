@@ -36,7 +36,6 @@ def check_passport_valid(passport: Dict[str, str]) -> bool:
         if re.fullmatch(r'[0-9]{9}', passport['pid']) is None: valid = False;
     except (TypeError, AttributeError):
         valid = False
-
     return valid
 
 if __name__ == '__main__':
