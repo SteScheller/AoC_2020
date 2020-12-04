@@ -17,9 +17,7 @@ def parse_input(file_path: str) -> List[Dict[str, str]]:
         list_of_dictionaries.append(d)
     return list_of_dictionaries
 
-def check_passport_fields(
-        passport: Dict[str, str],
-        required_fields: List[str]) -> bool:
+def check_passport_fields(passport: Dict[str, str], required_fields: List[str]) -> bool:
     return all([field in passport for field in required_fields])
 
 def check_passport_valid(passport: Dict[str, str]) -> bool:
@@ -35,20 +33,12 @@ def check_passport_valid(passport: Dict[str, str]) -> bool:
         if not (hgt_unit in {'cm', 'in'}): valid = False;
         else:
             hgt_value = int(passport['hgt'].rstrip(hgt_unit)) #rstrip doesn't check order of chars!
-            if (hgt_unit == 'cm') and \
-                    not ((hgt_value >= 150) and (hgt_value <= 193)):
-                valid = False
-            if (hgt_unit == 'in') and \
-                    not ((hgt_value >= 59) and (hgt_value <= 76)):
-                valid = False
+            if (hgt_unit == 'cm') and not ((hgt_value >= 150) and (hgt_value <= 193)): valid = False;
+            if (hgt_unit == 'in') and not ((hgt_value >= 59) and (hgt_value <= 76)): valid = False;
         hcl = passport['hcl']
         if (not hcl.startswith('#')) or (len(hcl) != 7): valid = False;
-        elif not all(
-                [c in set(string.digits+'abcdef') for c in hcl[1:]]):
-            valid = False
-        if not (passport['ecl'] in \
-                {'amb', 'blu', 'brn', 'gry', 'grn', 'hzl', 'oth'}):
-            valid = False
+        elif not all([c in set(string.digits+'abcdef') for c in hcl[1:]]): valid = False;
+        if not (passport['ecl'] in {'amb', 'blu', 'brn', 'gry', 'grn', 'hzl', 'oth'}): valid = False;
         pid = int(passport['pid']) if len(passport['pid']) == 9 else None
         if pid is None: valid = False;
     except (ValueError, KeyError):
