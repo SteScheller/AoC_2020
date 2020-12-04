@@ -11,10 +11,9 @@ def find_summands(
         elif s - x > 0:
             summands = find_summands(s-x, numbers[:i]+numbers[i+1:], num_summands-1)
             if type(summands) == int: summands = [summands];
-            if (summands is not None) and (len(list(summands))+1 == num_summands):
+            if (summands is not None) and (len(summands)+1 == num_summands):
                 return [x] + summands
-        else:
-            break
+        else: break;
 
 if __name__ == '__main__':
     with open('input.txt') as f:
