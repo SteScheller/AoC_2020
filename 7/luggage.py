@@ -36,7 +36,7 @@ if __name__ == '__main__':
     for t in g.neighborhood(v, order=len(g.vs), mode='out', mindist=1):
         paths = g.get_all_simple_paths(v, t)
         for p in paths:
-            num_bags = num_bags + functools.reduce(
+            num_bags += functools.reduce(
                     operator.mul,
                     [g.es[g.get_eid(a, b)]['cost'] for a, b in zip(p[:-1], p[1:])] )
     print('One {} bag must contain {} other bags.'.format(v['name'], num_bags) )

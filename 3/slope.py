@@ -22,10 +22,9 @@ def count_trees(
     p = np.array(p0)
     v = np.array(v)
     trees = 0
-
     while p[1] < slope.shape[0]:
-        trees = trees + slope[p[1]][p[0] % slope.shape[1]]
-        p = p + v
+        trees += slope[p[1]][p[0] % slope.shape[1]]
+        p += v
     return trees
 
 if __name__ == '__main__':
