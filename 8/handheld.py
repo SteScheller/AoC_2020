@@ -29,7 +29,7 @@ class VirtualMachine:
             ret_values = [ret_types[i](r) for i, r in enumerate(ret_values)]
         return ret_values
 
-    def execute_program(
+    def run_program(
             self,
             p: List[Tuple[str, List[str]]],
             reset: bool=True,
@@ -41,8 +41,7 @@ class VirtualMachine:
             executed_commands = set()
 
         while self._pc < len(p):
-            ret_values = self.execute_instruction(
-                p[self._pc][0], *(p[self._pc][1]) )
+            ret_values = self.execute_instruction(p[self._pc][0], *(p[self._pc][1]))
             if break_on_loop:
                 if not self._pc in executed_commands: executed_commands.add(self._pc);
                 else: return (1, self._pc, self._acc, ret_values);
@@ -62,6 +61,6 @@ if __name__ == '__main__':
         p_modified = copy.deepcopy(p_orig)
         if p_modified[i][0] == 'nop': p_modified[i] = ('jmp', p_modified[i][1]);
         elif p_modified[i][0] == 'jmp': p_modified[i] = ('nop', p_modified[i][1]);
-        ret_value = vm.execute_program(p_modified, break_on_loop=True)
+        ret_value = vm.run_program(p_modified, break_on_loop=True)
         print('Program terminated with code {0} : pc={1}, acc={2}, values={3}'.format(*ret_value))
         if ret_value[0] == 0: break;
