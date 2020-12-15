@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import re
 from typing import Tuple
 
 def parse_input(file_path: str, line_num: int=0) -> Tuple[int]:
