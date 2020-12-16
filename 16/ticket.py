@@ -1,7 +1,6 @@
 import re
 import functools
 import operator
-import itertools
 from typing import List, Tuple, Dict
 
 def parse_input(file_path: str
@@ -44,19 +43,29 @@ def find_invalid_values(
 def determine_field_order(
         rules: Tuple[Dict[str, List[range]]], tickets: List[List[int]]
         ) -> Dict[str, int]:
+    ppos = dict()
+    for r in rules:
+        for idx in range(len(tickets[0])):
+            valid = True
+            for t in tickets:
+                if not ((t[idx] in rules[r][0]) or (t[idx] in rules[r][1])):
+                    valid = False
+                    break
+            if valid:
+                ppos.setdefault(r, []).append(idx)
+
+    def sort_keys_by_ppos(k):
+        nonlocal ppos
+        return len(ppos[k])
+
+    picking_order = sorted(rules, key=sort_keys_by_ppos)
     field_order = dict()
-    indices = [i for i in range(len(tickets[0]))]
-    for p in itertools.permutations(indices, len(indices)):
-        for i, r in enumerate(rules):
-            field_order[r] = p[i]
-        valid = True
-        for r, t in itertools.product(rules, tickets):
-            if not ((t[field_order[r]] in rules[r][0]) or
-                    (t[field_order[r]] in rules[r][1])):
-                valid = False
-                break
-        if valid: break;
-        else: field_order = dict()
+    picked = set()
+    for k in picking_order:
+        place = int((set(ppos[k]) - picked).pop())
+        picked.add(place)
+        field_order[k] = place
+
     return field_order
 
 if __name__ == '__main__':
@@ -69,12 +78,8 @@ if __name__ == '__main__':
         else: valid_tickets.append(n)
     print(f'The ticket scanning error rate is {sum(invalid_values)}.')
     field_order = determine_field_order(rules, valid_tickets)
-    print(field_order)
-    l = [mine[field_order[r]] for r in rules if r.startswith('departure')]
-    print(l)
     multiplied = functools.reduce(
         operator.mul,
         [mine[field_order[r]] for r in rules if r.startswith('departure')])
     print('The result of multiplying all fields in my ticket that start with '
         f'"departure" is {multiplied}')
-
