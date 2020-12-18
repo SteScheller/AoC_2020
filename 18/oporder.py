@@ -26,7 +26,7 @@ def compute_expression(expr: str, precedence: bool=False) -> int:
     expr = f'({expr})'
     m = True
     while m:
-        m = re.search(r'\(?[\d \+\*]*(\([\d \+\*]+\))[\d \+\*]*\)?', expr)
+        m = re.search(r'[\d \+\*]*(\([\d \+\*]+\))[\d \+\*]*', expr)
         if m:
             term = m.group(1)
             if precedence and (('*' in term) and ('+' in term)):
