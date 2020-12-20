@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
-import re
 import string
 import itertools
 from typing import List
+
+import regex as re
 
 def parse_input(file_path: str) -> List[str]:
     with open(file_path) as f:
@@ -26,9 +27,15 @@ def check_rule(rules: ..., num_rule: int, message: str) -> bool:
             word = ''
             elements = re.findall(r'([\d]+|[a-b]+)', option)
             if str(num_rule) in elements:
-                group_name = itertools.cycle(['first', 'second'])
-                wrap = lambda x: f'(?P<{next(group_name)}_{num_rule}>{x})+'
-                elements = [elem for elem in elements if elem != str(num_rule)]
+                if num_rule == 11:
+                    p42 = assemble_rule(rules[42], 42)
+                    p31 = assemble_rule(rules[31], 31)
+                    rule = '(?P<p11>{p42}(?&p11){p31}|{p42}{p31})'.format(
+                            p42=p42, p31=p31)
+                    return rule
+                wrap = lambda x: f'({x})+'
+                elements = [elem for elem in elements
+                        if elem != str(num_rule)]
             else:
                 wrap = lambda x: x
             for elem in elements:
@@ -43,11 +50,6 @@ def check_rule(rules: ..., num_rule: int, message: str) -> bool:
 
     rule = assemble_rule(rules[num_rule], num_rule)
     m = re.fullmatch(rule, message)
-    if m:
-        groups = m.groupdict()
-        if ('first_11' in groups) and ('second_11' in groups):
-            if len(groups['first_11'] or []) != len(groups['second_11'] or []):
-                m = None
 
     return not(m is None)
 
